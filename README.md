@@ -37,30 +37,55 @@ This implementation differs from the original Pix2Vox++ in the following ways:
    - Shape: [batch_size, n_views, channels, height, width]
 
    2. **Feature Extraction**:
-   - Base: Pre-trained VGG16 with batch normalization (first 27 layers)
-   - Additional layers:
-     - Conv2D → BatchNorm → ELU
-     - Conv2D → BatchNorm → ELU → MaxPool
-     - Conv2D (1x1) → BatchNorm → ELU
+      - Base: Pre-trained VGG16 with batch normalization (first 27 layers)
+      - Additional layers:
+         - Conv2D → BatchNorm → ELU
+         - Conv2D → BatchNorm → ELU → MaxPool
+         - Conv2D (1x1) → BatchNorm → ELU
 
    3. **Multi-view Processing**:
-   - Each view processed independently
-   - Features aggregated by mean across views
+      - Each view processed independently
+      - Features aggregated by mean across views
 
    4. **Latent Space Projection**:
-   - Two fully connected layers:
-     - fc_mu: Produces mean (μ)
-     - fc_log_sigma: Produces log standard deviation (log σ)
+      - Two fully connected layers:
+      - fc_mu: Produces mean (μ)
+      - fc_log_sigma: Produces log standard deviation (log σ)
 
    5. **Reparameterization**:
-   - Samples latent vector z using μ and σ
+      - Samples latent vector z using μ and σ
 
-Outputs are the following:
+Outputs:
 - μ (mean of latent distribution)
 - log σ (log standard deviation of latent distribution)
 - z (sampled latent vector)
 
-2. Decoder: [Describe your VAE decoder architecture]
+2. Decoder: it is the part of a Variational Autoencoder (VAE) designed to reconstruct 3D volumes from a latent representation. the key components are the following:
+   1. **Input**: Latent vector z
+      - Dimension: [batch_size, latent_dim]
+
+   2. **Initial Transformation**:
+      - Fully connected layer: Transforms z to 2048 * 2 * 2 * 2 dimensions
+      - Reshaped to [batch_size, 2048, 2, 2, 2]
+
+   3. **3D Deconvolution Layers**:
+      - Layer 1: ConvTranspose3d(2048 → 512) → BatchNorm3d → ReLU
+      - Layer 2: ConvTranspose3d(512 → 128) → BatchNorm3d → ReLU
+      - Layer 3: ConvTranspose3d(128 → 32) → BatchNorm3d → ReLU
+      - Layer 4: ConvTranspose3d(32 → 8) → BatchNorm3d → ReLU
+      - Layer 5: ConvTranspose3d(8 → 1) → Sigmoid
+
+   4. **Multi-view Processing**:
+      - Features replicated for each view
+      - Processed independently through deconvolution layers
+
+Outputs:
+- raw_features: [batch_size, n_views, 9, 32, 32, 32]
+   - Combines features from Layer 4 and final output
+- gen_volumes: [batch_size, n_views, 32, 32, 32]
+   - Final reconstructed 3D volumes
+
+
 3. Latent Space: [Explain how the latent space is structured and used]
 
 
