@@ -102,10 +102,10 @@ Outputs:
       - `self.fc` in the decoder transforms z to the initial 3D shape (2048 * 2 * 2 * 2)
       - Subsequent layers reconstruct the full 3D object representation
 
-4. **Training Objectives**:
-   - Reconstruction loss: Ensures decoded output matches input
-   - KL divergence loss: Regularizes latent space to be close to N(0, I)
-   - These competing objectives create a meaningful and structured latent space
+   4. **Training Objectives**:
+      - Reconstruction loss: Ensures decoded output matches input
+      - KL divergence loss: Regularizes latent space to be close to N(0, I)
+      - These competing objectives create a meaningful and structured latent space
 
    5. **Multi-view Handling**:
       - The latent space encodes information from multiple views
