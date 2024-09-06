@@ -32,26 +32,27 @@ pip install -r requirements.txt
 
 This implementation differs from the original Pix2Vox++ in the following ways:
 
-1. Encoder: It is based on a modified version of VGG16 with batch normalization (VGG16_bn). It processes multi-view 2D images as input and extracts features through a series of convolutional layers. The encoder architecture is composed of the following key components:1. 1. **Input**: Multi-view images of 3D objects
+1. Encoder: It is based on a modified version of VGG16 with batch normalization (VGG16_bn). It processes multi-view 2D images as input and extracts features through a series of convolutional layers. The encoder architecture is composed of the following key components:
+   1. **Input**: Multi-view images of 3D objects
    - Shape: [batch_size, n_views, channels, height, width]
 
-2. **Feature Extraction**:
+   2. **Feature Extraction**:
    - Base: Pre-trained VGG16 with batch normalization (first 27 layers)
    - Additional layers:
      - Conv2D → BatchNorm → ELU
      - Conv2D → BatchNorm → ELU → MaxPool
      - Conv2D (1x1) → BatchNorm → ELU
 
-3. **Multi-view Processing**:
+   3. **Multi-view Processing**:
    - Each view processed independently
    - Features aggregated by mean across views
 
-4. **Latent Space Projection**:
+   4. **Latent Space Projection**:
    - Two fully connected layers:
      - fc_mu: Produces mean (μ)
      - fc_log_sigma: Produces log standard deviation (log σ)
 
-5. **Reparameterization**:
+   5. **Reparameterization**:
    - Samples latent vector z using μ and σ
 
 Outputs are the following:
